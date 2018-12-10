@@ -48,7 +48,7 @@ def recommendation():
 	if rec_list is None:
 		return 'User Id not found : %s' % user_id, 400
 
-	json_response = jsonify({'articles': [str(i) for i in rec_list]})
+	json_response = jsonify({'products': [str(i) for i in rec_list]})
 	return json_response, 200
 
 

@@ -6,11 +6,11 @@ Training and deploying this recommendation system requires the following applica
 * [Cloud Storage](https://cloud.google.com/storage/)
 * [App Engine](https://cloud.google.com/appengine/)
 
-Your project must have [Billing](https://cloud.google.com/billing/docs/) all the necessary [APIs](https://cloud.google.com/apis/) mentioned above enabled to run the recommender system in GCP.
+Your project must have [Billing](https://cloud.google.com/billing/docs/) and all the necessary [APIs](https://cloud.google.com/apis/) mentioned above enabled to run the recommender system in GCP.
 
 
 ## Installation
-Following steps are needed only first time. If you have done the installation before jump to step **Usage**
+Following steps are needed only at the first time. If you have done the installation before jump to step **Usage**.
 
 ### Install Miniconda 2:
 
@@ -28,30 +28,36 @@ Following steps are needed only first time. If you have done the installation be
 ## Usage
 
 ### Initialization
-If you have performed the **Installation** steps before then you only need to do the following steps:
+If you have performed the **Installation** step before then you only need to do the following steps:
 
     cd recommendation-system
+
     source activate tfrec
 
 ### Assing the Cloud Storage Bucket
 App needs a Cloud Storage Bucket to deploy the model and to load the data.
 
-Assing the following environment variable:
+Assign the following environment variable:
 
     export BUCKET=gs://recserve_$(gcloud config get-value project 2> /dev/null)
 
+If you have not created a bucket for your code to run in then run the following.
+
+    gsutil mb ${BUCKET}
+
 ### Training the model
 
-Go to the wals_ml_engine folder and traing the model. 
+Go to the wals_ml_engine folder and train the model. 
 
     cd wals_ml_engine
+
     ./mltrain.sh local $BUCKET/data/recommendation_events.csv \
     --use-optimized --output-dir ${BUCKET} 
 
-1. Parameter in ./mltrain.sh defines where you want to train the model (here it's set to local). 
-2. Parameter is the path where the training data is located.
-3. Parameter uses already hypertuned parameters for the training.
-4. Paramerter defines the output directory where the model is saved. 
+1. First parameter in ./mltrain.sh defines where you want to train the model (here it's set to local). 
+2. Second parameter is the path where the training data is located.
+3. **--use-optimized** uses already hypertuned parameters for the training.
+4. **--output-dir** defines the output directory where the model is saved. 
 
 
 ### Deploying the model
@@ -61,7 +67,7 @@ Go to the scripts folder and prepare the app for deployment.
     ./prepare_deploy_app.sh
 
 
-Every time you want to deploy a new version to the Google App Engine.
+Every time you want to deploy a new version to the Google App Engine run the following command.
 
     gcloud -q app deploy ../app/app_template.yaml_deploy.yaml
 

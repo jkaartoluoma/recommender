@@ -74,7 +74,7 @@ def create_test_and_train_sets(args, input_file):
 def _page_views_train_and_test(input_file):
 	"""Load page views dataset, and create train and set sparse matrices.
 
-	Assumes 'clientId', 'contentId', and 'timeOnPage' columns.
+	Assumes 'clientId', 'productId', and 'rating' columns.
 
 	Args:
 		input_file: path to csv data file
@@ -85,21 +85,21 @@ def _page_views_train_and_test(input_file):
 		sparse coo_matrix for training
 		sparse coo_matrix for test
 	"""
-	headers = ['clientId', 'contentId', 'timeOnPage']
-	views_df = pd.read_csv(input_file, sep=',', names=headers, header=None, dtype={ 'clientId': np.int32, 'contentId': np.int32, 'timeOnPage': np.float32 })  
+	headers = ['clientId', 'productId', 'rating']
+	views_df = pd.read_csv(input_file, sep=',', names=headers, header=None, dtype={ 'clientId': np.int32, 'productId': np.int32, 'rating': np.float32 })  
 	
 	
 	#views_df = pd.read_csv(input_file, sep=',', header=0)
 	
-	df_items = pd.DataFrame({'contentId': views_df.contentId.unique()})
-	df_sorted_items = df_items.sort_values('contentId').reset_index()
-	pds_items = df_sorted_items.contentId
+	df_items = pd.DataFrame({'productId': views_df.productId.unique()})
+	df_sorted_items = df_items.sort_values('productId').reset_index()
+	pds_items = df_sorted_items.productId
 
-	# preprocess data. df.groupby.agg sorts clientId and contentId
-	df_user_items = views_df.groupby(['clientId', 'contentId']
-		).agg({'timeOnPage': 'sum'})
+	# preprocess data. df.groupby.agg sorts clientId and productId
+	df_user_items = views_df.groupby(['clientId', 'productId']
+		).agg({'rating': 'sum'})
 
-	# create a list of (userId, itemId, timeOnPage) ratings, where userId and
+	# create a list of (userId, itemId, rating) ratings, where userId and
 	# clientId are 0-indexed
 	current_u = -1
 	ux = -1

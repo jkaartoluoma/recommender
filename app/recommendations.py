@@ -76,9 +76,16 @@ class Recommendations(object):
 
 		logging.info('Finished loading arrays.')
 
+		headers = ['clientId', 'contentId', 'rating']
+
 		# load user_item history into pandas dataframe
 		views_df = pd.read_csv(os.path.join(local_model_path,
-			USER_ITEM_DATA_FILE), sep=',', header=0)
+			USER_ITEM_DATA_FILE), sep=',', header=None, names=headers, dtype={
+					'clientId': np.int32,
+					'contentId': np.int32,
+					'rating': np.float32,
+					})
+
 		self.user_items = views_df.groupby('clientId')
 
 		logging.info('Finished loading model.')
@@ -103,20 +110,26 @@ class Recommendations(object):
 		if user_idx:
 			# get already viewed items from views dataframe
 			already_rated = self.user_items.get_group(user_id).contentId
+
+			# filter out the already "bought items"
+			#already_rated = [ row['contentId'] 
+			#	for index, row in self.user_items.get_group(user_id).iterrows() 
+			#	if row['rating'] >= 3 ]
+			
 			already_rated_idx = [np.searchsorted(self.item_map, i)
 													 for i in already_rated]
 
-			# consider excluding only the products that are rated higher than one buy event
-
 			# generate list of recommended article indexes from model
-			recommendations = generate_recommendations(user_idx, already_rated_idx,
+			recommendations = generate_recommendations(
+				user_idx, 
+				already_rated_idx,
 				self.user_factor,
 				self.item_factor,
 				num_recs)
 
 			# map article indexes back to article ids
 			article_recommendations = [self.item_map[i] for i in recommendations]
-
+ 
 		return article_recommendations
 
 
@@ -162,4 +175,3 @@ def generate_recommendations(user_idx, user_rated, row_factor, col_factor, k):
 	recommended_items.reverse()
 
 	return recommended_items
-
