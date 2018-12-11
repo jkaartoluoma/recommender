@@ -73,7 +73,7 @@ Every time you want to deploy a new version to the Google App Engine run the fol
 
 
 # References
-Repository is forked from [Google's Tutorial](https://github.com/GoogleCloudPlatform/tensorflow-recommendation-wals) and 
+Repository is forked from [GoogleCloudPlatform's](https://github.com/GoogleCloudPlatform/tensorflow-recommendation-wals) repository and 
 code is modified to fit our needs.
 
 # Credits
